@@ -2,7 +2,7 @@
 
 namespace SurvivalSkills;
 
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 class SkillManager {
     private $plugin;
