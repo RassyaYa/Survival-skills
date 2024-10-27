@@ -11,16 +11,17 @@ use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\utils\Config;
+use pocketmine\form\SimpleForm;
 
 class Main extends PluginBase implements Listener {
 
     private Config $playerData;
+    private SkillManager $skillManager;
 
     protected function onEnable(): void {
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
-
-        // Load or create player data file
         $this->playerData = new Config($this->getDataFolder() . "playerData.yml", Config::YAML);
+        $this->skillManager = new SkillManager($this->playerData);
     }
 
     protected function onDisable(): void {
@@ -31,7 +32,7 @@ class Main extends PluginBase implements Listener {
         $player = $event->getPlayer();
         $name = $player->getName();
 
-        // Inisialisasi data pemain baru jika belum ada
+        // Initialize player data if it doesn't exist
         if (!$this->playerData->exists($name)) {
             $this->playerData->set($name, [
                 "survival" => 0,
@@ -47,28 +48,35 @@ class Main extends PluginBase implements Listener {
     public function onCommand(CommandSender $sender, Command $command, string $label, array $args): bool {
         if ($command->getName() === "skill") {
             if ($sender instanceof Player) {
-                $this->openSkillGUI($sender);
-                return true;
+                if ($sender->hasPermission("survivalskills.use")) {
+                    $this->openSkillUI($sender);
+                    return true;
+                } else {
+                    $sender->sendMessage("You do not have permission to use this command.");
+                    return true;
+                }
             }
         }
         return false;
     }
 
-    public function openSkillGUI(Player $player): void {
-        $skillManager = new SkillManager($this->playerData);
-        $name = $player->getName();
+    public function openSkillUI(Player $player): void {
+        $form = new SimpleForm(function (Player $player, int $data = null) {
+            // Handle player's response, e.g., close the form
+        });
 
-        // Membuat array tombol untuk skill
-        $buttons = [];
-        $skills = ["survival", "hunting", "farming", "mining", "cooking"];
+        $form->setTitle("Skill Overview");
+        $content = "Your Skills:\n";
+        $name = $player->getName();
+        $skills = $this->playerData->get($name);
         
-        foreach ($skills as $skill) {
-            $level = $skillManager->getSkillLevel($name, $skill);
-            $buttons[] = ["text" => ucfirst($skill) . " - Level " . $level];
+        foreach ($skills as $skill => $level) {
+            $content .= ucfirst($skill) . ": " . $level . "\n";
         }
 
-        // Membuat dan mengirim SkillForm ke pemain
-        $form = new SkillForm("Skill Kamu", "Berikut adalah level skill kamu:", $buttons);
+        $form->setContent($content);
+        $form->addButton("Close");
+
         $player->sendForm($form);
     }
 }
