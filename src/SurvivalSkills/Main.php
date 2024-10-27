@@ -11,17 +11,15 @@ use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\utils\Config;
-use pocketmine\form\CustomForm;
+use pocketmine\form\SimpleForm; // Pastikan kelas ini tersedia di versi Anda
 
 class Main extends PluginBase implements Listener {
 
     private Config $playerData;
-    private SkillManager $skillManager;
 
     protected function onEnable(): void {
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
         $this->playerData = new Config($this->getDataFolder() . "playerData.yml", Config::YAML);
-        $this->skillManager = new SkillManager($this->playerData);
     }
 
     protected function onDisable(): void {
@@ -61,20 +59,20 @@ class Main extends PluginBase implements Listener {
     }
 
     public function openSkillUI(Player $player): void {
-        $form = new CustomForm(function (Player $player, array $data) {
-            // Handle player's response
+        $form = new SimpleForm(function (Player $player, int $data = null) {
+            // Handle player's response, e.g., close the form
         });
 
         $form->setTitle("Skill Overview");
-        $content = [];
+        $content = "Your Skills:\n";
         $name = $player->getName();
         $skills = $this->playerData->get($name);
-
+        
         foreach ($skills as $skill => $level) {
-            $content[] = ucfirst($skill) . ": " . $level;
+            $content .= ucfirst($skill) . ": " . $level . "\n";
         }
 
-        $form->addLabel(implode("\n", $content)); // Show skill levels
+        $form->setContent($content);
         $form->addButton("Close");
 
         $player->sendForm($form);
