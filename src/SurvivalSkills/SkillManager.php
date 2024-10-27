@@ -10,16 +10,13 @@ class SkillManager {
 
     public function __construct(Main $plugin) {
         $this->plugin = $plugin;
-        // Inisialisasi keterampilan default atau muat dari database
         $this->initSkills();
     }
 
     private function initSkills(): void {
-        // Contoh inisialisasi keterampilan
         $this->skills = [
             "skill1" => ["level" => 1, "description" => "Basic Skill"],
             "skill2" => ["level" => 1, "description" => "Advanced Skill"],
-            // Tambahkan lebih banyak keterampilan sesuai kebutuhan
         ];
     }
 
