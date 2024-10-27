@@ -2,11 +2,6 @@ name: SurvivalSkills
 version: 1.0.0
 main: SurvivalSkills\Main
 api: 5.0.0
-depend:
-  - FormsUI
-description: "A plugin that enhances the survival gameplay experience by adding various skills."
-authors:
-  - VsrStudio
 commands:
   skill:
     description: Open your skill overview
