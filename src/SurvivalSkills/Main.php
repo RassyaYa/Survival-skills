@@ -11,7 +11,7 @@ use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\utils\Config;
-use pocketmine\form\SimpleForm;
+use pocketmine\form\CustomForm;
 
 class Main extends PluginBase implements Listener {
 
@@ -61,20 +61,20 @@ class Main extends PluginBase implements Listener {
     }
 
     public function openSkillUI(Player $player): void {
-        $form = new SimpleForm(function (Player $player, int $data = null) {
-            // Handle player's response, e.g., close the form
+        $form = new CustomForm(function (Player $player, array $data) {
+            // Handle player's response
         });
 
         $form->setTitle("Skill Overview");
-        $content = "Your Skills:\n";
+        $content = [];
         $name = $player->getName();
         $skills = $this->playerData->get($name);
-        
+
         foreach ($skills as $skill => $level) {
-            $content .= ucfirst($skill) . ": " . $level . "\n";
+            $content[] = ucfirst($skill) . ": " . $level;
         }
 
-        $form->setContent($content);
+        $form->addLabel(implode("\n", $content)); // Show skill levels
         $form->addButton("Close");
 
         $player->sendForm($form);
