@@ -11,6 +11,7 @@ use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\utils\Config;
+use Vecnavium\FormsUI\SimpleForm;
 
 class Main extends PluginBase implements Listener {
 
@@ -46,7 +47,7 @@ class Main extends PluginBase implements Listener {
         if ($command->getName() === "skill") {
             if ($sender instanceof Player) {
                 if ($sender->hasPermission("survivalskills.use")) {
-                    $this->showSkills($sender);
+                    $this->openSkillUI($sender);
                     return true;
                 } else {
                     $sender->sendMessage("You do not have permission to use this command.");
@@ -57,15 +58,23 @@ class Main extends PluginBase implements Listener {
         return false;
     }
 
-    private function showSkills(Player $player): void {
+    public function openSkillUI(Player $player): void {
         $name = $player->getName();
         $skills = $this->playerData->get($name);
-        
-        $message = "Your Skills:\n";
+
+        $form = new SimpleForm(function (Player $player, int $data = null) {
+            // Handle player's response here if needed
+        });
+
+        $form->setTitle("Skill Overview");
+        $content = "Your Skills:\n";
         foreach ($skills as $skill => $level) {
-            $message .= ucfirst($skill) . ": " . $level . "\n";
+            $content .= ucfirst($skill) . ": " . $level . "\n";
         }
 
-        $player->sendMessage($message); // Display skills as chat message
+        $form->setContent($content);
+        $form->addButton("Close");
+
+        $player->sendForm($form);
     }
 }
