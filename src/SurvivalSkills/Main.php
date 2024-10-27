@@ -5,7 +5,7 @@ namespace SurvivalSkills;
 use pocketmine\plugin\PluginBase;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use Vecnavium\FormsUI\Form; // Pastikan ini diimpor jika Anda menggunakan Form API
 
 class Main extends PluginBase {
