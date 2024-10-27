@@ -2,6 +2,7 @@ name: SurvivalSkills
 version: 1.0.0
 main: SurvivalSkills\Main
 api: 5.0.0
+depend: [FormsUI]
 commands:
   skill:
     description: Open your skill overview
