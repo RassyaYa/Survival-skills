@@ -3,49 +3,61 @@
 namespace SurvivalSkills;
 
 use pocketmine\plugin\PluginBase;
+use pocketmine\event\Listener;
+use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\Player;
-use Vecnavium\FormsUI\SimpleForm; // Mengimpor SimpleForm dari FormsUI
+use Vecnavium\FormsUI\SimpleForm;
 
-class Main extends PluginBase {
-
+class Main extends PluginBase implements Listener {
+    
     private $skillManager;
 
     public function onEnable(): void {
+        $this->getServer()->getPluginManager()->registerEvents($this, $this);
+        $this->skillManager = new SkillManager($this);
         $this->getLogger()->info("SurvivalSkills plugin enabled!");
-        $this->skillManager = new SkillManager(); // Inisialisasi SkillManager
+    }
+
+    public function onJoin(PlayerJoinEvent $event): void {
+        $player = $event->getPlayer();
+        // Logika saat pemain bergabung
     }
 
     public function onCommand(CommandSender $sender, Command $command, string $label, array $args): bool {
-        if ($command->getName() === "skill") {
-            if ($sender instanceof Player) {
-                // Memeriksa permission sebelum membuka UI
-                if ($sender->hasPermission("survivalskills.use")) {
-                    $this->openSkillUI($sender);
-                } else {
-                    $sender->sendMessage("You do not have permission to use this command.");
-                }
-                return true;
-            } else {
-                $sender->sendMessage("This command can only be used in-game.");
-                return false;
-            }
+        if (!$sender instanceof Player) {
+            $sender->sendMessage("This command can only be used in-game.");
+            return false;
         }
+
+        if ($command->getName() === "skill") {
+            $this->openSkillUI($sender);
+            return true;
+        }
+
         return false;
     }
 
     public function openSkillUI(Player $player): void {
-        $form = new SimpleForm(function (Player $player, int $data) {
-            if ($data === -1) {
-                $player->sendMessage("You closed the skill overview.");
+        $form = new SimpleForm(function (Player $player, int $data = null) {
+            if ($data === null) return;
+
+            switch ($data) {
+                case 0:
+                    // Logika untuk Skill 1
+                    break;
+                case 1:
+                    // Logika untuk Skill 2
+                    break;
+                // Tambahkan lebih banyak opsi sesuai kebutuhan
             }
         });
 
         $form->setTitle("Skill Overview");
-        $form->setContent("Here you can see your skills.");
-        $form->addButton("Close");
-
-        $player->sendForm($form);
+        $form->setContent("Here are your skills:");
+        $form->addButton("Skill 1");
+        $form->addButton("Skill 2");
+        $form->sendToPlayer($player); // Pastikan menggunakan metode yang benar untuk mengirim form
     }
 }
