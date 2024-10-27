@@ -11,7 +11,6 @@ use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\utils\Config;
-use pocketmine\form\Form;
 
 class Main extends PluginBase implements Listener {
 
@@ -59,32 +58,7 @@ class Main extends PluginBase implements Listener {
         $skillManager = new SkillManager($this->playerData);
         $name = $player->getName();
 
-        // Membuat Form sederhana
-        $form = new class() implements Form {
-            private array $buttons = [];
-            private string $title = "";
-            private string $content = "";
-
-            public function __construct(string $title, string $content, array $buttons) {
-                $this->title = $title;
-                $this->content = $content;
-                $this->buttons = $buttons;
-            }
-
-            public function handleResponse(Player $player, $data): void {
-                // Placeholder untuk aksi setelah menutup form
-            }
-
-            public function jsonSerialize(): array {
-                return [
-                    "type" => "form",
-                    "title" => $this->title,
-                    "content" => $this->content,
-                    "buttons" => $this->buttons
-                ];
-            }
-        };
-
+        // Membuat array tombol untuk skill
         $buttons = [];
         $skills = ["survival", "hunting", "farming", "mining", "cooking"];
         
@@ -93,8 +67,8 @@ class Main extends PluginBase implements Listener {
             $buttons[] = ["text" => ucfirst($skill) . " - Level " . $level];
         }
 
-        // Membuat dan mengirim Form ke pemain
-        $form = new $form("Skill Kamu", "Berikut adalah level skill kamu:", $buttons);
+        // Membuat dan mengirim SkillForm ke pemain
+        $form = new SkillForm("Skill Kamu", "Berikut adalah level skill kamu:", $buttons);
         $player->sendForm($form);
     }
 }
